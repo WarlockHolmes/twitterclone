@@ -23,7 +23,7 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    //this.checkAuthenticated();
+    this.checkAuthenticated();
   }
 
   componentWillUnmount() { }
@@ -66,6 +66,7 @@ class App extends React.Component {
     }))
     .then(handleErrors)
     .then(res => {
+      console.log(res)
       if(res.success){
         this.setState({login: true})
       };

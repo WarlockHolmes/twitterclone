@@ -19,7 +19,7 @@ const Nav = (props) => {
             </div>
           </div>
           <div className="dropdown ml-5">
-            <a href="#" className="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span id="user-icon">{props.user}</span></a>
+            <a className="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span id="user-icon">{props.user}</span></a>
             <div className="dropdown-menu dropdown-menu-right" role="menu">
               <a href="#" className="username dropdown-item">User</a>
               <a href="#" className="dropdown-item">Lists</a>
