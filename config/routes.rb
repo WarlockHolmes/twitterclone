@@ -1,3 +1,20 @@
 Rails.application.routes.draw do
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+  root 'homepage#index'
+  namespace :api do
+    # USERS
+    post '/users'                  => 'users#create'
+
+    # SESSIONS
+    post '/sessions'               => 'sessions#create'
+    get  '/authenticated'          => 'sessions#authenticated'
+    delete '/sessions'             => 'sessions#destroy'
+
+    # TWEETS
+    post '/tweets'                 => 'tweets#create'
+    get  '/tweets'                 => 'tweets#index'
+    delete '/tweets/:id'           => 'tweets#destroy'
+    get  '/users/:username/tweets' => 'tweets#index_by_user'
+    get  '/tweets/search/:keyword' => 'tweets#search'
+  end
+  get '*path' => 'homepage#index'
 end
