@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  root 'homepage#index'
+  root to: 'homepage#index'
   namespace :api do
     # USERS
     post '/users'                  => 'users#create'
