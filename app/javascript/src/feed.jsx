@@ -229,7 +229,7 @@ class Feed extends React.Component {
   render() {
     let {feed, usercount, userpage, viewing} = this.state;
     let {user} = this.props;
-    let tweets = <p>No Tweets</p>;
+    let tweets = <div></div>
     if (feed.length !== undefined) {
       tweets = feed.map(tweet => <Tweet key={tweet.id} id={tweet.id} seeUser={this.seeUserPage} user={tweet.username} message={tweet.message} delete={this.deleteTweet}/>)
     }
