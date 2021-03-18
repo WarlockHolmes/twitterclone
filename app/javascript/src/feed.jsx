@@ -1,5 +1,5 @@
 import React from 'react';
-import { safeCredentials, handleErrors } from './utils/fetchHelper';
+import { safeCredentials, handleErrors, authenticityHeader } from './utils/fetchHelper';
 
 const Tweet = (props) => {
   return (
@@ -25,6 +25,7 @@ class NewTweet extends React.Component {
     this.charCount =  this.charCount.bind(this);
     this.postTweet = this.postTweet.bind(this);
     this.handleImage = this.handleImage.bind(this);
+    this.removeImage = this.removeImage.bind(this);
   }
 
   handleComposition () {
@@ -44,18 +45,43 @@ class NewTweet extends React.Component {
   }
 
   postTweet() {
-    let {composition} = this.state;
-    fetch(`/api/tweets`, safeCredentials({
-      method: 'POST',
-      body: JSON.stringify({
-        tweet: {
-          message: composition,
-        }
-      })
+    const toDataURL = (url) => fetch(url)
+    .then(response => response.blob())
+    .then(blob => new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onloadend = () => resolve(reader.result)
+      reader.onerror = reject
+      reader.readAsDataURL(blob)
     }))
+
+    let {composition, image_url} = this.state;
+
+    var formData = new FormData();
+
+    if (composition !== '') {
+      formData.append('tweet[message]', composition);
+    }
+
+    if (image_url) {
+      toDataURL(image_url).then(dataURL => {
+        console.log(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""))
+        formData.append('tweet[image]', dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
+      })
+    }
+
+    fetch(`/api/tweets`, {
+      method: 'POST',
+      body: formData,
+      contentType: false,
+      credentials: 'include',
+      mode: 'same-origin',
+      headers: authenticityHeader()
+    })
     .then(handleErrors)
     .then(res => {
+      console.log(res)
       this.setState({composition: ''})
+      //this.removeImage()
       this.props.refresh();
     }).catch((error) => {
       console.log(error);
@@ -67,6 +93,10 @@ class NewTweet extends React.Component {
     this.setState({textarea_size: 'form-control post-input textarea-small'})
   }
 
+  removeImage() {
+    this.setState({image_url: false})
+    this.setState({textarea_size: 'form-control post-input'})
+  }
 
   render(){
     let {char, composition, image_url, textarea_size} = this.state;
@@ -76,7 +106,7 @@ class NewTweet extends React.Component {
           <textarea type="textarea" className={textarea_size} rows="3" placeholder="What's happening?" onChange={this.handleComposition} value={composition}></textarea>
           {image_url &&
           <div className="preview-wrapper">
-            <img id="image-preview" src={image_url} alt="image preview"/>
+            <img id="image-preview" src={image_url} alt="image preview" onClick={this.removeImage}/>
           </div>}
           <div className="float-right">
             <label id="upload-image-btn"><strong>Upload image</strong>
@@ -85,7 +115,6 @@ class NewTweet extends React.Component {
             <span className="post-char-counter">{char}</span>
             <button className="btn btn-primary" id="post-tweet-btn" onClick={this.postTweet}>Tweet</button>
           </div>
-
         </div>
       </React.Fragment>
     );
