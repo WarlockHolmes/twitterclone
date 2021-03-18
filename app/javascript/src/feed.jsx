@@ -18,10 +18,13 @@ class NewTweet extends React.Component {
     this.state = {
       char: 140,
       composition: '',
+      image_url: false,
+      textarea_size: 'form-control post-input'
     }
     this.handleComposition = this.handleComposition.bind(this);
     this.charCount =  this.charCount.bind(this);
     this.postTweet = this.postTweet.bind(this);
+    this.handleImage = this.handleImage.bind(this);
   }
 
   handleComposition () {
@@ -59,20 +62,30 @@ class NewTweet extends React.Component {
     })
   }
 
+  handleImage() {
+    this.setState({image_url: URL.createObjectURL(event.target.files[0])})
+    this.setState({textarea_size: 'form-control post-input textarea-small'})
+  }
+
+
   render(){
-    let {char, composition} = this.state;
+    let {char, composition, image_url, textarea_size} = this.state;
     return (
       <React.Fragment>
         <div className="col-12 post-tweet-box">
-          <textarea type="textarea" className="form-control post-input" rows="3" placeholder="What's happening?" onChange={this.handleComposition} value={composition}></textarea>
+          <textarea type="textarea" className={textarea_size} rows="3" placeholder="What's happening?" onChange={this.handleComposition} value={composition}></textarea>
+          {image_url &&
+          <div className="preview-wrapper">
+            <img id="image-preview" src={image_url} alt="image preview"/>
+          </div>}
           <div className="float-right">
-            <img id="image-preview" src="" alt="image preview"/>
             <label id="upload-image-btn"><strong>Upload image</strong>
-              <input type="file" id="image-select" name="image" accept="image/*" />
+              <input type="file" id="image-select" name="image" accept="image/*" onChange={this.handleImage}/>
             </label>
             <span className="post-char-counter">{char}</span>
             <button className="btn btn-primary" id="post-tweet-btn" onClick={this.postTweet}>Tweet</button>
           </div>
+
         </div>
       </React.Fragment>
     );

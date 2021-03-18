@@ -217,7 +217,7 @@ a:hover {
   border-radius: 5px;
 }
 
-.post-tweet-box div {
+.post-tweet-box .float-right {
   margin: 10px 0;
 }
 
@@ -232,15 +232,34 @@ a:hover {
   z-index: -1;
 }
 
-#image-preview {
-  display: none;
-  max-height: 40px;
-  max-width: 40px;
+.preview-wrapper {
+  border: 1px solid white;
+  border-radius: 10px;
+  display: inline-block;
+  height: 85px;
+  width: 29%;
+  margin-right: 0;
+  margin-left: 2px;
+  overflow-y: scroll;
+
+}
+
+#image-preview{
+  max-width: 100%;
   &:hover {
     cursor: pointer;
     -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
     filter: grayscale(100%);
   }
+}
+
+.post-input {
+  display: inline-block;
+  height: 100px;
+}
+
+.textarea-small {
+  width: 70%;
 }
 
 .post-char-counter {
