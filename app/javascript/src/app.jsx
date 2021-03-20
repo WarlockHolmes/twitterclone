@@ -68,7 +68,6 @@ class App extends React.Component {
     }))
     .then(handleErrors)
     .then(res => {
-      console.log(res)
       if(res.error){alert(res.error)}
       if(res.success){this.setState({login: true})};
     }).catch((error) => {
@@ -91,12 +90,8 @@ class App extends React.Component {
     }))
     .then(handleErrors)
     .then(res => {
-      console.log(res);
       if (res.user){
         this.submitLogIn();
-      }
-      if (res.error){
-        alert(res.error)
       }
     }).catch((error) => {
       console.log(error);
