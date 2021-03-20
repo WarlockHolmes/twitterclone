@@ -16,5 +16,5 @@ Rails.application.routes.draw do
     get  '/users/:username/tweets' => 'tweets#index_by_user'
     get  '/tweets/search/:keyword' => 'tweets#search'
   end
-  get '*path' => 'homepage#index'
+  #get '*path' => 'homepage#index'
 end

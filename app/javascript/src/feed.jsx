@@ -7,6 +7,7 @@ const Tweet = (props) => {
       <a className="tweet-username" data-user={props.user} onClick={props.seeUser}>{props.user}</a>
       <a className="tweet-screenName ml-2" data-user={props.user} onClick={props.seeUser}>@{props.user}</a>
       <p>{props.message}</p>
+      {(props.image !== undefined) && <img src={props.image}/>}
       <a className="delete-tweet" data-user={props.user} data-tweet={props.id} onClick={props.delete}>Delete</a>
     </div>
   );
@@ -26,6 +27,7 @@ class NewTweet extends React.Component {
     this.postTweet = this.postTweet.bind(this);
     this.handleImage = this.handleImage.bind(this);
     this.removeImage = this.removeImage.bind(this);
+    this.inputRef = React.createRef();
   }
 
   handleComposition () {
@@ -44,16 +46,7 @@ class NewTweet extends React.Component {
     this.setState({ char: 140 - composition.length })
   }
 
-  postTweet() {
-    const toDataURL = (url) => fetch(url)
-    .then(response => response.blob())
-    .then(blob => new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onloadend = () => resolve(reader.result)
-      reader.onerror = reject
-      reader.readAsDataURL(blob)
-    }))
-
+  postTweet () {
     let {composition, image_url} = this.state;
 
     var formData = new FormData();
@@ -63,10 +56,8 @@ class NewTweet extends React.Component {
     }
 
     if (image_url) {
-      toDataURL(image_url).then(dataURL => {
-        console.log(dataURL.replace(/^data:image\/(png|jpg);base64,/, ""))
-        formData.append('tweet[image]', dataURL.replace(/^data:image\/(png|jpg);base64,/, ""));
-      })
+      var image = this.inputRef.current.files[0];
+      formData.append('tweet[image]', image, image.name);
     }
 
     fetch(`/api/tweets`, {
@@ -79,9 +70,9 @@ class NewTweet extends React.Component {
     })
     .then(handleErrors)
     .then(res => {
-      console.log(res)
       this.setState({composition: ''})
-      //this.removeImage()
+      this.setState({char: 140})
+      this.removeImage()
       this.props.refresh();
     }).catch((error) => {
       console.log(error);
@@ -94,6 +85,7 @@ class NewTweet extends React.Component {
   }
 
   removeImage() {
+    this.inputRef.current.value = ""
     this.setState({image_url: false})
     this.setState({textarea_size: 'form-control post-input'})
   }
@@ -110,7 +102,7 @@ class NewTweet extends React.Component {
           </div>}
           <div className="float-right">
             <label id="upload-image-btn"><strong>Upload image</strong>
-              <input type="file" id="image-select" name="image" accept="image/*" onChange={this.handleImage}/>
+              <input type="file" id="image-select" name="image" accept="image/*" ref={this.inputRef} onChange={this.handleImage}/>
             </label>
             <span className="post-char-counter">{char}</span>
             <button className="btn btn-primary" id="post-tweet-btn" onClick={this.postTweet}>Tweet</button>
@@ -273,7 +265,7 @@ class Feed extends React.Component {
     let {user} = this.props;
     let tweets = <div></div>
     if (feed.length !== undefined) {
-      tweets = feed.map(tweet => <Tweet key={tweet.id} id={tweet.id} seeUser={this.seeUserPage} user={tweet.username} message={tweet.message} delete={this.deleteTweet}/>)
+      tweets = feed.map(tweet => <Tweet key={tweet.id} id={tweet.id} seeUser={this.seeUserPage} user={tweet.username} message={tweet.message} delete={this.deleteTweet} image={tweet.image}/>)
     }
     return (
       <React.Fragment>
