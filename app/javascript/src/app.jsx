@@ -34,7 +34,6 @@ class App extends React.Component {
       }))
     .then(handleErrors)
     .then(res => {
-      console.log(res)
       if (res.authenticated){
         this.setState({username: res.username})
         this.setState({login: true})
