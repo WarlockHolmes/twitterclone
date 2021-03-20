@@ -34,6 +34,7 @@ class App extends React.Component {
       }))
     .then(handleErrors)
     .then(res => {
+      console.log(res)
       if (res.authenticated){
         this.setState({username: res.username})
         this.setState({login: true})
@@ -54,6 +55,7 @@ class App extends React.Component {
   }
 
   submitLogIn () {
+    event.preventDefault();
     let { username, password } = this.state;
     fetch(`/api/sessions`, safeCredentials({
       method: 'POST',
@@ -67,9 +69,8 @@ class App extends React.Component {
     .then(handleErrors)
     .then(res => {
       console.log(res)
-      if(res.success){
-        this.setState({login: true})
-      };
+      if(res.error){alert(res.error)}
+      if(res.success){this.setState({login: true})};
     }).catch((error) => {
       console.log(error);
     })
@@ -93,7 +94,10 @@ class App extends React.Component {
       console.log(res);
       if (res.user){
         this.submitLogIn();
-      };
+      }
+      if (res.error){
+        alert(res.error)
+      }
     }).catch((error) => {
       console.log(error);
     })
